@@ -1,0 +1,122 @@
+html,body {height:100%;}
+#mainContainer {
+    width: 90%;
+}
+
+.editLabel {
+    width: 100%;
+    padding: 0 15px;
+    cursor: text;
+    color: #888888;
+    height: 40px;
+}
+
+.editLabel:hover {
+    color: #000000;
+    background-color: #f0f0f0;
+}
+
+.editInput {
+    width: 100%;
+    padding: 0 15px;
+    height: 40px;
+    display: inline-block;
+}
+
+.cBox-container {
+    display: block;
+    position: absolute;
+    background-color: #ffffff;
+    
+    border-radius: 10px 10px 10px 10px;
+    -moz-border-radius: 10px 10px 10px 10px;
+    -webkit-border-radius: 10px 10px 10px 10px;
+    border: 2px solid #000000;
+}
+
+.cBox-titleBar {
+    cursor: move;
+    display: block;
+    position: relative;
+    height: 40px;
+    width: 100%;
+    background-color: #cccccc;
+    
+    border-radius: 10px 10px 0 0;
+    -moz-border-radius: 10px 10px 0 0;
+    -webkit-border-radius: 10px 10px 0 0;
+    border-bottom: 1px solid #000000;
+}
+
+.cBox-title {
+    display: block;
+    position: relative;
+    padding-left: 15px;
+    font-weight: bold;
+    font-size: 24px;
+    line-height: 40px;
+    height: 40px;
+    float: left;
+}
+
+.cBox-titleClose {
+    cursor: move;
+    display: block;
+    position: relative;
+    padding-left: 15px;
+    font-weight: bold;
+    font-size: 24px;
+    line-height: 40px;
+    height: 40px;
+    float: left;
+}
+
+.cBox-actionBar {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    height: 45px;
+    width: 100%;
+    padding: 5px 0;
+    background-color: #ffffff;
+    
+    border-radius: 0 0 10px 10px;
+    -moz-border-radius: 0 0 10px 10px;
+    -webkit-border-radius: 0 0 10px 10px;
+    border-top: 1px solid #000000;
+}
+
+.cBox-button {
+    display: block;
+    position: relative;
+    padding: 5px 10px;
+    background-color: #ffffff;
+    border: 1px solid #000000;
+    
+    border-radius: 10px 10px 10px 10px;
+    -moz-border-radius: 10px 10px 10px 10px;
+    -webkit-border-radius: 10px 10px 10px 10px;
+}
+
+.cBox-button a {
+    text-decoration: none;
+}
+.cBox-button:hover {
+    background-color: #dddddd;
+    text-decoration: none;
+}
+
+.cBox-actionBar > ul {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.cBox-actionBar > ul > li {
+    display: inline-block;
+    vertical-align: middle;
+    float: right;
+    list-style-type: none;
+    padding-right: 15px;
+}
