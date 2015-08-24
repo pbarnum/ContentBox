@@ -49,11 +49,41 @@ function clearDataset(element)
 
 function ContentBox(options)
 {
-    var existingBoxes = document.getElementsByClassName('cBox-container');
+    // Singleton -- Only keep one instance of this method
+    var instance;
+    ContentBox = function() {
+        return instance;
+    };
+    
+    ContentBox.prototype = this;
+    instance = new ContentBox();
+    instance.constructor = ContentBox;
+    
+    // Initialize global variables
     var self = this;
     this.undefined;
+    this.CLASSES = {
+        CONTAINER:  'cBox-container',
+        TITLE_BAR:  'cBox-titleBar',
+        TITLE:      'cBox-title',
+        BUTTON:     'cBox-button',
+        CLOSE:      'cBox-close',
+        RESIZE:     'cBox-resize',
+        ACTION_BAR: 'cBox-actionBar'
+    };
     
+    // Make sure options is an object
     options = options || {};
+    this.create(options);
+    
+    return instance;
+}
+
+ContentBox.prototype.create = function(options)
+{
+    // Grab all existing boxes and include them into this object
+    var existingBoxes = document.getElementsByClassName('cBox-container');
+    
     options.movable = options.movable || true;
     options.scalable = options.scalable || true;
     options.buttons = options.buttons || {};
@@ -61,8 +91,8 @@ function ContentBox(options)
     options.width = options.width || 680;
     
     this.box = createElement('div', {
-        id: 'contentBox-'+ existingBoxes.length,
-        class: 'cBox-container',
+        id: 'cBox-'+ existingBoxes.length,
+        class: this.CLASSES.CONTAINER,
         style: [
             'z-index:'+ (10000 + existingBoxes.length),
             'height:'+ options.height +'px',
@@ -73,15 +103,10 @@ function ContentBox(options)
     });
     
     var titleBar = createElement('div', {
-        id: 'cBox-titleBar-' + existingBoxes.length,
-        class: 'cBox-titleBar'
+        id: this.CLASSES.TITLE_BAR + '-' + existingBoxes.length,
+        class: this.CLASSES.TITLE_BAR
     });
-    titleBar.innerHTML = '<span class="cBox-title">'+ options.title +'</span>';
-    
-    //if(options.scalable)
-    //{
-    //    
-    //}
+    titleBar.innerHTML = '<span class="' + this.CLASSES.TITLE + '">'+ options.title +'</span>';
     
     var onDown = {};
     var onMove = {};
@@ -101,8 +126,8 @@ function ContentBox(options)
             // Prevent selection when dragging
             if(e.stopPropagation) e.stopPropagation();
             if(e.preventDefault) e.preventDefault();
-            e.cancelBubble=true;
-            e.returnValue=false;
+            e.cancelBubble = true;
+            e.returnValue = false;
             return false;
         };
         
@@ -149,7 +174,7 @@ function ContentBox(options)
     this.box.appendChild(titleBar);
     
     var closeButton = createElement('a', {
-        class: 'cBox-button cBox-close',
+        class: this.CLASSES.BUTTON + ' ' + this.CLASSES.CLOSE,
         href: 'javascript:void(0);'
     });
     
@@ -157,7 +182,7 @@ function ContentBox(options)
     closeButton.innerHTML = 'Close';
     
     var actionBar = createElement('div', {
-        class: 'cBox-actionBar'
+        class: this.CLASSES.ACTION_BAR
     });
     var ul = document.createElement('ul');
     var li = document.createElement('li');
@@ -178,7 +203,7 @@ function ContentBox(options)
         }
         
         var a = createElement('a', {
-            class: 'cBox-button' + tmpClass,
+            class: this.CLASSES.BUTTON + tmpClass,
             href: b.href,
         });
         a.innerHTML = b.text;
@@ -189,6 +214,22 @@ function ContentBox(options)
     actionBar.appendChild(ul);
     this.box.appendChild(actionBar);
     
+    if(options.scalable)
+    {
+        // Create draggable corner object
+        var resize = createElement('div', {
+            id: this.CLASSES.RESIZE + '-' + existingBoxes.length,
+            class: this.CLASSES.RESIZE
+        });
+        
+        window.addEventListener('mousedown', function(e)
+        {
+            
+        });
+        
+        this.box.appendChild(resize);
+    }
+    
     document.body.appendChild(this.box);
 }
 
@@ -196,9 +237,3 @@ ContentBox.prototype.close = function()
 {
     this.box.parentNode.removeChild(this.box);
 }
-
-var hi = new ContentBox();
-
-
-
-
