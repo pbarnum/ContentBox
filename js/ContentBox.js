@@ -47,6 +47,9 @@ function clearDataset(element)
 }
 
 
+/**
+ * Constructor
+ */
 function ContentBox(options)
 {
     // Singleton -- Only keep one instance of this method
@@ -60,7 +63,30 @@ function ContentBox(options)
     instance.constructor = ContentBox;
     
     // Initialize global variables
-    var self = this;
+    var manager = {
+        boxes: function()
+        {
+            return document.getElementsByClassName('cBox-container');
+        },
+        current: null,
+        setCurrent: function(id)
+        {
+            if(this.boxes.length <= 0)
+                return this.current = null;
+            
+            id = id || null;
+            var b = this.boxes;
+            if(id !== null && typeof b[id] === 'object')
+                this.current = b[id];
+            else
+                this.current = b[b.length - 1];
+        }
+    };
+    this.getManager = function()
+    {
+        return manager;
+    };
+    
     this.undefined;
     this.CLASSES = {
         CONTAINER:  'cBox-container',
@@ -74,23 +100,47 @@ function ContentBox(options)
     
     // Make sure options is an object
     options = options || {};
+    
+    this.callbacks = {};
+    this.callbacks.beforeCreate = options.beforeCreate;
+    this.callbacks.afterCreate = options.afterCreate;
+    this.callbacks.beforeClose = options.beforeClose;
+    
+    // Create the box
     this.create(options);
     
+    // Return "this"
     return instance;
 }
 
+/**
+ * Creates new box
+ */
 ContentBox.prototype.create = function(options)
 {
-    // Grab all existing boxes and include them into this object
-    var existingBoxes = document.getElementsByClassName('cBox-container');
+    // Set the local object variable
+    var self = this;
+    var existingBoxes = this.getManager().boxes;
     
+    options = options || {};
     options.movable = options.movable || true;
     options.scalable = options.scalable || true;
     options.buttons = options.buttons || {};
     options.height = options.height || 480;
     options.width = options.width || 680;
     
-    this.box = createElement('div', {
+    // Before Create callback
+    if(typeof this.callbacks.beforeCreate === 'function')
+    {
+        this.callbacks.beforeCreate(existingBoxes);
+    }
+    
+    this.box = {};
+    this.box.id = existingBoxes.length;
+    this.box.zIndex = (10000 + existingBoxes.length);
+    this.box.height = options.height;
+    this.box.width = options.width;
+    this.box.element = createElement('div', {
         id: 'cBox-'+ existingBoxes.length,
         class: this.CLASSES.CONTAINER,
         style: [
@@ -101,6 +151,7 @@ ContentBox.prototype.create = function(options)
             'left:'+ ((window.innerWidth / 2) - (options.width / 2)) +'px'
         ]
     });
+    var boxElement = this.box.element;
     
     var titleBar = createElement('div', {
         id: this.CLASSES.TITLE_BAR + '-' + existingBoxes.length,
@@ -115,7 +166,7 @@ ContentBox.prototype.create = function(options)
     {
         onDown = function(e)
         {
-            var box = titleBar.parentNode;
+            var box = boxElement;
             
             titleBar.dataset.zIndex = box.style.zIndex;
             titleBar.dataset.diffTop = titleBar.parentNode.offsetTop - e.clientY;
@@ -136,7 +187,7 @@ ContentBox.prototype.create = function(options)
             if(titleBar.dataset.active !== 'true')
                 return 0;
             
-            var box = titleBar.parentNode;
+            var box = boxElement;
             var boxTop = box.offsetTop;
             var boxLeft = box.offsetLeft;
             var boxBottom = box.offsetTop + box.offsetHeight;
@@ -160,7 +211,7 @@ ContentBox.prototype.create = function(options)
         
         onUp = function(e)
         {
-            var box = titleBar.parentNode;
+            var box = boxElement;
             box.style.zIndex = Number(titleBar.dataset.zIndex);
             clearDataset(titleBar);
         }
@@ -171,14 +222,14 @@ ContentBox.prototype.create = function(options)
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
     
-    this.box.appendChild(titleBar);
+    this.box.element.appendChild(titleBar);
     
     var closeButton = createElement('a', {
         class: this.CLASSES.BUTTON + ' ' + this.CLASSES.CLOSE,
         href: 'javascript:void(0);'
     });
     
-    closeButton.addEventListener('click', function(e){self.close();}, false);
+    closeButton.addEventListener('click', function(e){ self.close(); }, false);
     closeButton.innerHTML = 'Close';
     
     var actionBar = createElement('div', {
@@ -212,7 +263,7 @@ ContentBox.prototype.create = function(options)
     }
     
     actionBar.appendChild(ul);
-    this.box.appendChild(actionBar);
+    this.box.element.appendChild(actionBar);
     
     if(options.scalable)
     {
@@ -222,18 +273,59 @@ ContentBox.prototype.create = function(options)
             class: this.CLASSES.RESIZE
         });
         
-        window.addEventListener('mousedown', function(e)
+        resize.addEventListener('mousedown', function(e)
         {
+            var box = resize.parentNode;
             
+            titleBar.dataset.zIndex = box.style.zIndex;
+            titleBar.dataset.diffTop = titleBar.parentNode.offsetTop - e.clientY;
+            titleBar.dataset.diffLeft = titleBar.parentNode.offsetLeft - e.clientX;
+            titleBar.dataset.active = 'true';
+            box.style.zIndex = 20000;
+            
+            // Prevent selection when dragging
+            if(e.stopPropagation) e.stopPropagation();
+            if(e.preventDefault) e.preventDefault();
+            e.cancelBubble = true;
+            e.returnValue = false;
+            return false;
         });
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', onUp);
         
-        this.box.appendChild(resize);
+        this.box.element.appendChild(resize);
     }
     
-    document.body.appendChild(this.box);
-}
+    document.body.appendChild(this.box.element);
+    this.getManager().current = this.box;
+    
+    // After Create callback
+    if(typeof this.callbacks.afterCreate === 'function')
+    {
+        this.callbacks.afterCreate(existingBoxes);
+    }
+};
 
+/**
+ * Get current box
+ */
+ContentBox.prototype.getCurrent = function()
+{
+    return this.getManager().current;
+};
+ 
+/**
+ * Closes a box
+ */
 ContentBox.prototype.close = function()
 {
-    this.box.parentNode.removeChild(this.box);
-}
+    // Before close callback
+    if(typeof this.callbacks.beforeClose === 'function')
+    {
+        this.callbacks.beforeClose(this.box.element);
+    }
+    console.log(this);
+    if(this.box.id == this.getCurrent().id)
+        this.getManager().setCurrent();
+    this.box.element.parentNode.removeChild(this.box.element);
+};
