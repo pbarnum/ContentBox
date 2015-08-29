@@ -21,7 +21,7 @@ Some text
         width: 400,
         height: 300
     });
-    console.log(box.getCurrent());
+
     box.create();
 </script>
 
