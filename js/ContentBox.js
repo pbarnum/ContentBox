@@ -7,7 +7,7 @@
  */
 
 // Use strict JavaScript standards
-;"use strict";
+"use strict";
 
 /**
  * Helper function for creating DOM elements
@@ -40,7 +40,7 @@ function clearDataset(element)
     if(typeof element.dataset !== 'object')
         return false;
 
-    for(prop in element.dataset)
+    for(var prop in element.dataset)
     {
         delete element.dataset[prop];
     }
@@ -52,9 +52,17 @@ function clearDataset(element)
  */
 function ContentBox(options)
 {
+    // Singleton
     if(ContentBox.prototype._instance)
+    {
+        // Didn't create the object
+        ContentBox.prototype.created = false;
         return ContentBox.prototype._instance;
+    }
     ContentBox.prototype._instance = this;
+    
+    // Created the object
+    ContentBox.prototype.created = true;
 
     // Initialize global variables
     var manager = {
@@ -73,7 +81,7 @@ function ContentBox(options)
             else
                 for(var i in this.boxes)
                     if(this.boxes[i].id > id)
-                        id = this.boxes[id];
+                        id = this.boxes[id].id;
             return id + 1;
         },
 
@@ -111,6 +119,7 @@ function ContentBox(options)
          */
         addBox: function(box)
         {
+            ContentBox.prototype.created = true;
             this.boxes.push(box);
             this.setCurrent(box.id);
             document.body.appendChild(box.element);
@@ -129,7 +138,7 @@ function ContentBox(options)
             box.element.parentNode.removeChild(box.element);
 
             // Set the new current box
-            this.setCurrent(box.parent);
+            this.setCurrent(/*box.parent*/);
 
             // Remove the box
             this.boxes.splice(this.boxes.indexOf(box), 1);
@@ -159,10 +168,11 @@ function ContentBox(options)
         return manager;
     };
 
-    this.undefined;
+    this.undefined = 'undefined';
     this.CLASSES = {
         CONTAINER:  'cBox-container',
         TITLE_BAR:  'cBox-titleBar',
+        BODY:       'cBox-body',
         TITLE:      'cBox-title',
         BUTTON:     'cBox-button',
         CLOSE:      'cBox-close',
@@ -170,17 +180,10 @@ function ContentBox(options)
         ACTION_BAR: 'cBox-actionBar'
     };
 
-    // Make sure options is an object
-    options = options || {};
-
-    this.callbacks = {};
-    this.callbacks.beforeCreate = options.beforeCreate;
-    this.callbacks.afterCreate = options.afterCreate;
-    this.callbacks.beforeClose = options.beforeClose;
-
-    // Create the box
-    this.create(options);
-
+    // Create a box on initialization when options are present
+    if(options)
+        this.create(options);
+    
     return this;
 }
 
@@ -195,12 +198,19 @@ ContentBox.prototype.create = function(options)
 
     // Make sure the options are defined
     options = options || {};
-    options.parent = options.parent || null;
-    options.movable = options.movable || true;
-    options.scalable = options.scalable || true;
+    //options.parent = options.parent || null;
+    options.isMovable = typeof options.isMovable !== this.undefined ? options.isMovable : true;
+    options.isScalable = typeof options.isScalable !== this.undefined ? options.isScalable : true;
     options.buttons = options.buttons || {};
     options.height = options.height || 480;
     options.width = options.width || 680;
+    options.title = options.title || 'Content Box';
+    options.body = options.body || '';
+    
+    this.callbacks = {};
+    this.callbacks.beforeCreate = options.beforeCreate;
+    this.callbacks.afterCreate = options.afterCreate;
+    this.callbacks.beforeClose = options.beforeClose;
 
     // Before Create callback
     if(typeof this.callbacks.beforeCreate === 'function')
@@ -211,13 +221,13 @@ ContentBox.prototype.create = function(options)
     // Create the box
     var box = {};
     box.id = this.getManager().nextId();
-    box.parent = options.parent;
+    //box.parent = options.parent;
     box.height = options.height;
     box.width = options.width;
     box.element = createElement('div', {
-        id: 'cBox-'+ box.id,
-        class: this.CLASSES.CONTAINER,
-        style: [
+        'id': 'cBox-'+ box.id,
+        'class': this.CLASSES.CONTAINER,
+        'style': [
             'z-index:'+ (this.getManager().findZIndex()),
             'height:'+ options.height +'px',
             'width:'+ options.width +'px',
@@ -244,15 +254,15 @@ ContentBox.prototype.create = function(options)
 
     // Create the title bar
     var titleBar = createElement('div', {
-        id: this.CLASSES.TITLE_BAR + '-' + box.id,
-        class: this.CLASSES.TITLE_BAR
+        'id': this.CLASSES.TITLE_BAR + '-' + box.id,
+        'class': this.CLASSES.TITLE_BAR
     });
     titleBar.innerHTML = '<span class="' + this.CLASSES.TITLE + '">'+ options.title +'</span>';
 
     var onDown = {};
     var onMove = {};
     var onUp = {};
-    if(options.movable)
+    if(options.isMovable)
     {
         // Title bar mouse down event
         onDown = function(e)
@@ -311,18 +321,30 @@ ContentBox.prototype.create = function(options)
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
     box.element.appendChild(titleBar);
+    
+    // Create the body element
+    var body = createElement('div', {
+        'id': this.CLASSES.BODY + '-' + box.id,
+        'class': this.CLASSES.BODY
+    });
+    if(typeof options.body === 'function')
+        options.body(body);
+    else
+        body.innerHTML = options.body;
+    box.element.appendChild(body);
 
     // Create the close button
     var closeButton = createElement('a', {
-        class: this.CLASSES.BUTTON + ' ' + this.CLASSES.CLOSE,
-        href: 'javascript:void(0);'
+        'class': this.CLASSES.BUTTON + ' ' + this.CLASSES.CLOSE,
+        'href': 'javascript:void(0);'
     });
     closeButton.addEventListener('click', function(e){ self.close(); }, false);
     closeButton.innerHTML = 'Close';
 
     // Create the action bar to house the buttons
     var actionBar = createElement('div', {
-        class: this.CLASSES.ACTION_BAR
+        'id': this.CLASSES.ACTION_BAR + '-' + box.id,
+        'class': this.CLASSES.ACTION_BAR
     });
     var ul = document.createElement('ul');
     var li = document.createElement('li');
@@ -344,8 +366,8 @@ ContentBox.prototype.create = function(options)
         }
 
         var a = createElement('a', {
-            class: this.CLASSES.BUTTON + tmpClass,
-            href: b.href,
+            'class': this.CLASSES.BUTTON + tmpClass,
+            'href': b.href
         });
         a.innerHTML = b.text;
         li.appendChild(a);
@@ -357,12 +379,12 @@ ContentBox.prototype.create = function(options)
     box.element.appendChild(actionBar);
 
     // Define the box resize events
-    if(options.scalable)
+    if(options.isScalable)
     {
         // Create draggable corner object
         var resize = createElement('div', {
-            id: this.CLASSES.RESIZE + '-' + box.id,
-            class: this.CLASSES.RESIZE
+            'id': this.CLASSES.RESIZE + '-' + box.id,
+            'class': this.CLASSES.RESIZE
         });
 
         resize.addEventListener('mousedown', function(e)

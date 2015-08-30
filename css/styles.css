@@ -1,0 +1,137 @@
+html, body {
+    height: 100%;
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+h1 {
+    font-size: 36px;
+}
+
+.mainTable {
+    width: 100%;
+}
+
+.mainTable > tbody td {
+    width: 50%;
+    padding: 5px 10px 30px 0;
+}
+
+.mainTable > tbody td:first-child {
+    border-right: 1px solid #cccccc;
+}
+
+.mainTable > tbody td:last-child {
+    width: 50%;
+    padding: 5px 10px;
+    border-right: none;
+}
+
+.optionTable {
+    width: 100%;
+}
+    
+.optionTable > tbody td {
+    vertical-align: middle;
+    padding: 5px 10px;
+    border: 1px solid #cccccc !important;
+    border-collapse: collapse;
+}
+
+.pad {
+    padding-left: 0 !important;
+}
+
+.br {
+    height: 100px;
+}
+
+.titleBar {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #ffffff;
+    text-align: center;
+    border-bottom: 2px solid #000000;
+}
+
+.mainTitle {
+    margin-top: 15px;
+}
+
+h1.title {
+    display: table;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #cccccc;
+}
+
+div.title {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 24px;
+}
+
+.download {
+    margin: 15px;
+}
+
+.download a {
+    text-decoration: none;
+}
+
+.download a:hover {
+    color: #00cc00;
+}
+
+.content {
+    width: 1024px;
+    margin: 40px auto;
+}
+
+.code {
+    background-color: #eeeeee;
+}
+
+.code .language {
+    display: block;
+    padding: 5px 10px;
+    font-size: 20px;
+    font-weight: 800;
+    border-bottom: 2px solid #000000;
+}
+
+.snippet {
+    font-family: "Courier New", Courier, monospace;
+    background-color: #dddddd;
+}
+
+.code .snippet {
+    padding: 5px 10px;
+    cursor: copy;
+    font-size: 16px;
+    line-height: 16px;
+    min-height: 40px;
+    cursor: copy;
+}
+
+.code button.runButton {
+    cursor: pointer;
+    display: inline-block;
+    margin-right: 10px;
+    background-color: #ffffff;
+    float: right;
+    padding: 2px 5px;
+    border-radius: 10px 10px 10px 10px;
+    -moz-border-radius: 10px 10px 10px 10px;
+    -webkit-border-radius: 10px 10px 10px 10px;
+    border: 1px solid #000000;
+}
+
+.code button.runButton:hover {
+    background-color: #cccccc;
+    color: #cc0000;
+}
