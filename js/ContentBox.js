@@ -12,19 +12,17 @@
 /**
 * Helper function for creating DOM elements
 */
-function createElement(type, properties)
-{
-  if (typeof type !== 'string')
-    return console.error('Could not create an element of type '+ type);
-
+function createElement(type, properties) {
+  if (typeof type !== 'string') {
+    return console.error('Could not create an element of type ' + (typeof type));
+  }
   var element = document.createElement(type);
 
-  if (typeof properties !== 'undefined')
-  {
-    for (var prop in properties)
-    {
-      if (properties[prop].constructor === Array)
+  if (typeof properties !== 'undefined') {
+    for (var prop in properties) {
+      if (properties[prop].constructor === Array) {
         properties[prop] = properties[prop].join(';');
+      }
       element.setAttribute(prop, properties[prop]);
     }
   }
@@ -35,24 +33,22 @@ function createElement(type, properties)
 /**
 * Helper function for clearing an element's dataset
 */
-function clearDataset(element)
-{
-  if (typeof element.dataset !== 'object')
+function clearDataset(element) {
+  if (typeof element.dataset !== 'object') {
     return false;
+  }
 
-  for (var prop in element.dataset)
+  for (var prop in element.dataset) {
     delete element.dataset[prop];
+  }
 }
-
 
 /**
 * Constructor
 */
-function ContentBox(options)
-{
+function ContentBox(options) {
   // Singleton
-  if (ContentBox.prototype._instance)
-  {
+  if (ContentBox.prototype._instance) {
     // Didn't create the object
     ContentBox.prototype.created = false;
     return ContentBox.prototype._instance;
@@ -71,15 +67,17 @@ function ContentBox(options)
      * Returns a new id
      * @return  int     id
      */
-    nextId: function()
-    {
+    nextId: function () {
       var id = 1;
-      if (this.boxes.length <= 0)
+      if (this.boxes.length <= 0) {
         return id;
-      else
-        for (var i in this.boxes)
-          if (this.boxes[i].id > id)
+      } else {
+        for (var i in this.boxes) {
+          if (this.boxes[i].id > id) {
             id = this.boxes[id].id;
+          }
+        }
+      }
       return id + 1;
     },
 
@@ -88,11 +86,12 @@ function ContentBox(options)
      * @param   int     id
      * @return  Object  The box
      */
-    getBoxById: function(id)
-    {
-      for (var i in this.boxes)
-        if (this.boxes[i].id == id)
+    getBoxById: function (id) {
+      for (var i in this.boxes) {
+        if (this.boxes[i].id == id) {
           return this.boxes[i];
+        }
+      }
       return null;
     },
 
@@ -100,23 +99,23 @@ function ContentBox(options)
      * Sets the id of the current box
      * @param   int     id
      */
-    setCurrent: function(id)
-    {
-      if (this.boxes.length <= 0)
+    setCurrent: function (id) {
+      if (this.boxes.length <= 0) {
         this.current = null;
+      }
       var box = this.getBoxById(id);
-      if (box)
+      if (box) {
         this.current = box.id;
-      else
+      } else {
         this.current = this.boxes[this.boxes.length - 1].id;
+      }
     },
 
     /**
-        * Adds the box to the current set of boxes and adds
-        * its element to the DOM
-        */
-    addBox: function(box)
-    {
+     * Adds the box to the current set of boxes and adds
+     * its element to the DOM
+     */
+    addBox: function (box) {
       ContentBox.prototype.created = true;
       this.boxes.push(box);
       this.setCurrent(box.id);
@@ -127,8 +126,7 @@ function ContentBox(options)
      * Removes a box from the manager and the DOM using its id
      * @param   int     The box id
      */
-    removeBox: function(id)
-    {
+    removeBox: function (id) {
       // Loop through all boxes
       var box = this.getBoxById(id);
 
@@ -146,42 +144,42 @@ function ContentBox(options)
      * Find the DOM's highest z-index and return it plus 1
      * @return  int     Highest z-index plus 1
      */
-    findZIndex: function()
-    {
+    findZIndex: function () {
       var highestZ = 100;
       var elements = document.getElementsByTagName('*');
-      if (!elements.length)
+      if (!elements.length) {
         return highestZ;
-      for (var i = 0; i < elements.length; ++i)
-      {
+      }
+      for (var i = 0; i < elements.length; ++i) {
         var z = parseInt(elements[i].style.zIndex);
-        if (z > highestZ)
+        if (z > highestZ) {
           highestZ = z;
+        }
       }
       return highestZ + 1;
     }
   };
 
-  this.getManager = function()
-  {
+  this.getManager = function () {
     return manager;
   };
 
   this.undefined = 'undefined';
   this.CLASSES = {
-    CONTAINER:  'cBox-container',
-    TITLE_BAR:  'cBox-titleBar',
-    BODY:       'cBox-body',
-    TITLE:      'cBox-title',
-    BUTTON:     'cBox-button',
-    CLOSE:      'cBox-close',
-    RESIZE:     'cBox-resize',
+    CONTAINER: 'cBox-container',
+    TITLE_BAR: 'cBox-titleBar',
+    BODY: 'cBox-body',
+    TITLE: 'cBox-title',
+    BUTTON: 'cBox-button',
+    CLOSE: 'cBox-close',
+    RESIZE: 'cBox-resize',
     ACTION_BAR: 'cBox-actionBar'
   };
 
   // Create a box on initialization when options are present
-  if (options)
+  if (options) {
     this.create(options);
+  }
 
   return this;
 }
@@ -189,8 +187,7 @@ function ContentBox(options)
 /**
  * Creates new box
  */
-ContentBox.prototype.create = function(options)
-{
+ContentBox.prototype.create = function (options) {
   // Set the local object variable
   var self = this;
   var existingBoxes = this.getManager().boxes;
@@ -212,8 +209,7 @@ ContentBox.prototype.create = function(options)
   this.callbacks.beforeClose = options.beforeClose;
 
   // Before Create callback
-  if (typeof this.callbacks.beforeCreate === 'function')
-  {
+  if (typeof this.callbacks.beforeCreate === 'function') {
     this.callbacks.beforeCreate(existingBoxes);
   }
 
@@ -224,23 +220,21 @@ ContentBox.prototype.create = function(options)
   box.height = options.height;
   box.width = options.width;
   box.element = createElement('div', {
-    'id': 'cBox-'+ box.id,
+    'id': 'cBox-' + box.id,
     'class': this.CLASSES.CONTAINER,
     'style': [
-      'z-index:'+ (this.getManager().findZIndex()),
-      'height:'+ options.height +'px',
-      'width:'+ options.width +'px',
-      'top:'+ ((window.innerHeight / 2) - (options.height / 2)) +'px',
-      'left:'+ ((window.innerWidth / 2) - (options.width / 2)) +'px'
+      'z-index:' + (this.getManager().findZIndex()),
+      'height:' + options.height + 'px',
+      'width:' + options.width + 'px',
+      'top:' + ((window.innerHeight / 2) - (options.height / 2)) + 'px',
+      'left:' + ((window.innerWidth / 2) - (options.width / 2)) + 'px'
     ]
   });
 
   // Set the z-index and current box on element mouse down event
-  box.element.addEventListener('mousedown', function(e)
-  {
+  box.element.addEventListener('mousedown', function (e) {
     var lastBox = self.getCurrent();
-    if (lastBox)
-    {
+    if (lastBox) {
       var swapZ = lastBox.element.style.zIndex;
       lastBox.element.style.zIndex = box.element.style.zIndex;
       box.element.style.zIndex = swapZ;
@@ -256,16 +250,14 @@ ContentBox.prototype.create = function(options)
     'id': this.CLASSES.TITLE_BAR + '-' + box.id,
     'class': this.CLASSES.TITLE_BAR
   });
-  titleBar.innerHTML = '<span class="' + this.CLASSES.TITLE + '">'+ options.title +'</span>';
+  titleBar.innerHTML = '<span class="' + this.CLASSES.TITLE + '">' + options.title + '</span>';
 
   var onDown = {};
   var onMove = {};
   var onUp = {};
-  if (options.isMovable)
-  {
+  if (options.isMovable) {
     // Title bar mouse down event
-    onDown = function(e)
-    {
+    onDown = function (e) {
       titleBar.dataset.zIndex = boxElement.style.zIndex;
       titleBar.dataset.diffTop = boxElement.offsetTop - e.clientY;
       titleBar.dataset.diffLeft = boxElement.offsetLeft - e.clientX;
@@ -273,43 +265,49 @@ ContentBox.prototype.create = function(options)
       boxElement.style.zIndex = self.getManager().findZIndex();
 
       // Prevent selection when dragging
-      if (e.stopPropagation) e.stopPropagation();
-      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) {
+        e.stopPropagation();
+      }
+      if (e.preventDefault) {
+        e.preventDefault();
+      }
       e.cancelBubble = true;
       e.returnValue = false;
       return false;
     };
 
     // Window mouse move event
-    onMove = function(e)
-    {
-      if (titleBar.dataset.active !== 'true')
+    onMove = function (e) {
+      if (titleBar.dataset.active !== 'true') {
         return 0;
+      }
 
-      var boxTop = boxElement.offsetTop;
-      var boxLeft = boxElement.offsetLeft;
-      var boxBottom = boxElement.offsetTop + boxElement.offsetHeight;
-      var boxRight = boxElement.offsetLeft + boxElement.offsetWidth;
+      var boxTop = e.clientY + Number(titleBar.dataset.diffTop);
+      var boxLeft = e.clientX + Number(titleBar.dataset.diffLeft);
+      var boxBottom = boxTop + boxElement.offsetHeight;
+      var boxRight = boxLeft + boxElement.offsetWidth;
+      var windowBottom = window.innerHeight + window.scrollY;
+      var windowRight = window.innerWidth + window.scrollX;
 
-      var finalTop = e.clientY + Number(titleBar.dataset.diffTop);
-      var finalLeft = e.clientX + Number(titleBar.dataset.diffLeft);
+      if (boxTop - window.scrollY < 0) {
+        boxTop = window.scrollY;
+      }
+      if (boxBottom > windowBottom) {
+        boxTop = windowBottom - boxElement.offsetHeight;
+      }
+      if (boxLeft - window.scrollX < 0) {
+        boxLeft = window.scrollX;
+      }
+      if (boxRight > windowRight) {
+        boxLeft = windowRight - boxElement.offsetWidth;
+      }
 
-      if (finalTop < 0)
-        finalTop = 0;
-      if (finalTop + boxElement.offsetHeight > window.innerHeight)
-        finalTop = window.innerHeight - boxElement.offsetHeight;
-      if (finalLeft < 0)
-        finalLeft = 0;
-      if (finalLeft + boxElement.offsetWidth > window.innerWidth)
-        finalLeft = window.innerWidth - boxElement.offsetWidth;
-
-      boxElement.style.top = finalTop +'px';
-      boxElement.style.left = finalLeft +'px';
+      boxElement.style.top = boxTop + 'px';
+      boxElement.style.left = boxLeft + 'px';
     }
 
     // Window mouse up event
-    onUp = function(e)
-    {
+    onUp = function (e) {
       boxElement.style.zIndex = Number(titleBar.dataset.zIndex);
       clearDataset(titleBar);
     }
@@ -326,10 +324,11 @@ ContentBox.prototype.create = function(options)
     'id': this.CLASSES.BODY + '-' + box.id,
     'class': this.CLASSES.BODY
   });
-  if (typeof options.body === 'function')
+  if (typeof options.body === 'function') {
     options.body(body);
-  else
+  } else {
     body.innerHTML = options.body;
+  }
   box.element.appendChild(body);
 
   // Create the close button
@@ -337,7 +336,7 @@ ContentBox.prototype.create = function(options)
     'class': this.CLASSES.BUTTON + ' ' + this.CLASSES.CLOSE,
     'href': 'javascript:void(0);'
   });
-  closeButton.addEventListener('click', function(e){ self.close(); }, false);
+  closeButton.addEventListener('click', function (e) { self.close(); }, false);
   closeButton.innerHTML = 'Close';
 
   // Create the action bar to house the buttons
@@ -351,17 +350,16 @@ ContentBox.prototype.create = function(options)
   ul.appendChild(li);
 
   // Loop through all defined buttons
-  for (button in options.buttons)
-  {
+  for (button in options.buttons) {
     var b = options.buttons[button];
     b.href = b.href || 'javascript:void(0);';
     var li = document.createElement('li');
     var tmpClass = '';
-    if (b['class'] != this.undefined)
-    {
-      if (b['class'].constructor === Array)
+    if (b['class'] != this.undefined) {
+      if (b['class'].constructor === Array) {
         b['class'] = b['class'].join(' ');
-      tmpClass = ' '+ b['class'];
+      }
+      tmpClass = ' ' + b['class'];
     }
 
     var a = createElement('a', {
@@ -378,16 +376,14 @@ ContentBox.prototype.create = function(options)
   box.element.appendChild(actionBar);
 
   // Define the box resize events
-  if (options.isScalable)
-  {
+  if (options.isScalable) {
     // Create draggable corner object
     var resize = createElement('div', {
       'id': this.CLASSES.RESIZE + '-' + box.id,
       'class': this.CLASSES.RESIZE
     });
 
-    resize.addEventListener('mousedown', function(e)
-    {
+    resize.addEventListener('mousedown', function (e) {
       resize.dataset.oHeight = boxElement.offsetHeight;
       resize.dataset.oWidth = boxElement.offsetWidth;
       resize.dataset.initY = e.clientY;
@@ -395,17 +391,21 @@ ContentBox.prototype.create = function(options)
       resize.dataset.active = 'true';
 
       // Prevent selection when dragging
-      if (e.stopPropagation) e.stopPropagation();
-      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) {
+        e.stopPropagation();
+      }
+      if (e.preventDefault) {
+        e.preventDefault();
+      }
       e.cancelBubble = true;
       e.returnValue = false;
       return false;
     });
 
-    window.addEventListener('mousemove', function(e)
-    {
-      if (resize.dataset.active !== 'true')
+    window.addEventListener('mousemove', function (e) {
+      if (resize.dataset.active !== 'true') {
         return 0;
+      }
 
       var boxHeight = boxElement.offsetHeight;
       var boxWidth = boxElement.offsetWidth;
@@ -413,17 +413,18 @@ ContentBox.prototype.create = function(options)
       var finalHeight = e.clientY - resize.dataset.initY + Number(resize.dataset.oHeight);
       var finalWidth = e.clientX - resize.dataset.initX + Number(resize.dataset.oWidth);
 
-      if (finalHeight < 100)
+      if (finalHeight < 100) {
         finalHeight = 100;
-      if (finalWidth < 200)
+      }
+      if (finalWidth < 200) {
         finalWidth = 200;
+      }
 
-      boxElement.style.height = finalHeight +'px';
-      boxElement.style.width = finalWidth +'px';
+      boxElement.style.height = finalHeight + 'px';
+      boxElement.style.width = finalWidth + 'px';
     });
 
-    window.addEventListener('mouseup', function(e)
-    {
+    window.addEventListener('mouseup', function (e) {
       clearDataset(resize);
     });
 
@@ -434,30 +435,31 @@ ContentBox.prototype.create = function(options)
   this.getManager().addBox(box);
 
   // After Create callback
-  if (typeof this.callbacks.afterCreate === 'function')
+  if (typeof this.callbacks.afterCreate === 'function') {
     this.callbacks.afterCreate(box);
+  }
 };
 
 /**
 * Get current box
 * @return  Object  The current box
 */
-ContentBox.prototype.getCurrent = function()
-{
-  return this.getManager().getBoxById( this.getManager().current );
+ContentBox.prototype.getCurrent = function () {
+  return this.getManager().getBoxById(this.getManager().current);
 };
 
 /**
 * Removes the box from the DOM and the manager.
 */
-ContentBox.prototype.close = function()
-{
+ContentBox.prototype.close = function () {
   var box = this.getCurrent();
 
   // Before close callback
-  if (typeof this.callbacks.beforeClose === 'function')
+  if (typeof this.callbacks.beforeClose === 'function') {
     this.callbacks.beforeClose(box);
+  }
 
-  if (box)
+  if (box) {
     this.getManager().removeBox(box.id);
+  }
 };

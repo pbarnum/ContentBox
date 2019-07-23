@@ -8,16 +8,16 @@
   <title>Content Box</title>
 
   <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
-  <link rel="stylesheet" type="text/css" href="/css/reset.css" />
-  <link rel="stylesheet" type="text/css" href="/css/styles.css" />
-  <link rel="stylesheet" type="text/css" href="/css/ContentBox.css" />
+  <link rel="stylesheet" type="text/css" href="./css/reset.css" />
+  <link rel="stylesheet" type="text/css" href="./css/styles.css" />
+  <link rel="stylesheet" type="text/css" href="./css/ContentBox.css" />
 </head>
 
 <body>
   <div class="titleBar">
     <h1 class="mainTitle">Content Box</h1>
     <h2 class="subTitle">Made with pure JavaScript</h2>
-    <div class="download"><a href="/files/ContentBox.zip" download>Click to download</a></div>
+    <div class="download"><a href="./files/ContentBox.zip" download>Click to download</a></div>
   </div>
   <div class="br"></div>
 
@@ -64,7 +64,8 @@
           </td>
           <td>
             <div class="code">
-              <div class="language">JavaScript <button class="runButton" onclick="createDefault();">Run Code</button></div>
+              <div class="language">JavaScript <button class="runButton" onclick="createDefault();">Run Code</button>
+              </div>
               <div class="snippet" onclick="copyCode(this);" title="Click snippet to copy to the clipboard">
                 cboxManager.create();
               </div>
@@ -77,7 +78,8 @@
           <td class="pad" colspan="2">
             <p>
               <div class="title">Customizing Boxes</div>
-              The <span class="snippet">create()</span> method will accept one argument of type <span class="snippet">Object</span>.
+              The <span class="snippet">create()</span> method will accept one argument of type <span
+                class="snippet">Object</span>.
               Listed below are all the options available to you...
             </p>
           </td>
@@ -87,17 +89,51 @@
             <p>
               <table class="optionTable">
                 <tbody>
-                  <tr><td><span class="snippet">int</span> parent</td><td>Sets the parent Box for the new Box.</td></tr>
-                  <tr><td><span class="snippet">bool</span> isMovable</td><td>Allows the Box to move within the window. The title bar is used to move the Box.</td></tr>
-                  <tr><td><span class="snippet">bool</span> isScalable</td><td>Allows the Box to scale. A div element will be appended to the Box for its control.</td></tr>
-                  <tr><td><span class="snippet">object</span> buttons</td><td>Reads a key:value object where the key represents the button text and the value its function.</td></tr>
-                  <tr><td><span class="snippet">int</span> height</td><td>The height of the Box.</td></tr>
-                  <tr><td><span class="snippet">int</span> width</td><td>The width of the Box.</td></tr>
-                  <tr><td><span class="snippet">string</span> title</td><td>The title of the Box.</td></tr>
-                  <tr><td><span class="snippet">mixed</span> body</td><td>The body can be represented as a function, or string.</td></tr>
-                  <tr><td><span class="snippet">function</span> beforeCreate</td><td>Callback function returning one argument: array existingBoxes.</td></tr>
-                  <tr><td><span class="snippet">function</span> afterCreate</td><td>Callback function returning one argument: object newBox.</td></tr>
-                  <tr><td><span class="snippet">function</span> beforeClose</td><td>Callback function returning one argument: object currentBox.</td></tr>
+                  <tr>
+                    <td><span class="snippet">int</span> parent</td>
+                    <td>Sets the parent Box for the new Box.</td>
+                  </tr>
+                  <tr>
+                    <td><span class="snippet">bool</span> isMovable</td>
+                    <td>Allows the Box to move within the window. The title bar is used to move the Box.</td>
+                  </tr>
+                  <tr>
+                    <td><span class="snippet">bool</span> isScalable</td>
+                    <td>Allows the Box to scale. A div element will be appended to the Box for its control.</td>
+                  </tr>
+                  <tr>
+                    <td><span class="snippet">object</span> buttons</td>
+                    <td>Reads a key:value object where the key represents the button text and the value its function.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><span class="snippet">int</span> height</td>
+                    <td>The height of the Box.</td>
+                  </tr>
+                  <tr>
+                    <td><span class="snippet">int</span> width</td>
+                    <td>The width of the Box.</td>
+                  </tr>
+                  <tr>
+                    <td><span class="snippet">string</span> title</td>
+                    <td>The title of the Box.</td>
+                  </tr>
+                  <tr>
+                    <td><span class="snippet">mixed</span> body</td>
+                    <td>The body can be represented as a function, or string.</td>
+                  </tr>
+                  <tr>
+                    <td><span class="snippet">function</span> beforeCreate</td>
+                    <td>Callback function returning one argument: array existingBoxes.</td>
+                  </tr>
+                  <tr>
+                    <td><span class="snippet">function</span> afterCreate</td>
+                    <td>Callback function returning one argument: object newBox.</td>
+                  </tr>
+                  <tr>
+                    <td><span class="snippet">function</span> beforeClose</td>
+                    <td>Callback function returning one argument: object currentBox.</td>
+                  </tr>
                 </tbody>
               </table>
             </p>
@@ -108,50 +144,44 @@
   </div>
 </body>
 
-<script type="text/javascript" src="/js/ContentBox.js"></script>
+<script type="text/javascript" src="./js/ContentBox.js"></script>
 <script>
-var cboxManager = new ContentBox();
-document.addEventListener('click', function(e)
-{
-  document.activeElement.blur();
-});
+  var cboxManager = new ContentBox();
+  document.addEventListener('click', function (e) {
+    document.activeElement.blur();
+  });
 
-function copyCode(el)
-{
-  if(document.selection)
-  {
-    var range = document.body.createTextRange();
-    range.moveToElementText(el);
-    range.select();
+  function copyCode(el) {
+    if (document.selection) {
+      var range = document.body.createTextRange();
+      range.moveToElementText(el);
+      range.select();
+    } else if (window.getSelection) {
+      var range = document.createRange();
+      range.selectNode(el);
+      window.getSelection().addRange(range);
+    }
+
+    document.execCommand("RemoveFormat");
+    document.execCommand("Copy");
   }
-  else if(window.getSelection)
-  {
-    var range = document.createRange();
-    range.selectNode(el);
-    window.getSelection().addRange(range);
+
+  function initCBox() {
+    if (!cboxManager.created) {
+      cboxManager.create({
+        movable: false,
+        scalable: false,
+        width: 300,
+        height: 150,
+        title: 'Hey!',
+        body: 'You\'ve already created the Content Box object, so there is no need for another one!'
+      });
+    }
   }
 
-  document.execCommand("RemoveFormat");
-  document.execCommand("Copy");
-}
-
-function initCBox()
-{
-  if(!cboxManager.created)
-    cboxManager.create({
-      movable: false,
-      scalable: false,
-      width: 300,
-      height: 150,
-      title: 'Hey!',
-      body: 'You\'ve already created the Content Box object, so there is no need for another one!'
-    });
-}
-
-function createDefault()
-{
-  cboxManager.create();
-}
+  function createDefault() {
+    cboxManager.create();
+  }
 </script>
 
 </html>
